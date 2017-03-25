@@ -7,8 +7,11 @@ var UserSchema = new mongoose.Schema({
   password: {type: String},
   gender: {type: String, default: ''},
   age: {type: Number, default: ''},
+  location: {type: String, default: ''},
   skills: {type: String, default: ''},
   vision: {type: String, default: ''},
+  interest: {type: String, default: ''},
+  image: {type: String, default: ''},
   passwordResetToken: {type: String, default: ''},
   passwordResetExpires: {type: Date, default: Date.now},
 });
