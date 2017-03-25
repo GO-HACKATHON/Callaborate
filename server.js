@@ -13,7 +13,8 @@ var flash = require('connect-flash');
 var app = express();
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect('mongodb://callaborate:admin@ds035643.mlab.com:35643/callaborate-test');
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://callaborate:admin@ds117859.mlab.com:17859/callaboratedb');
 
 require('./config/passport');
 
@@ -36,11 +37,11 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-require('./routes/user')(app);
-
 app.get("/", function(req, res, next){
   res.render('index');
 });
+
+require('./routes/user')(app, passport);
 
 app.listen(PORT, function(){
   console.log("App running");

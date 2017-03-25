@@ -1,17 +1,20 @@
 var mongoose = require('mongoose');
+var bcrypt = require('bcrypt-nodejs');
 
 var UserSchema = new mongoose.Schema({
-  name: {type: String, required: true},
+  fullname: {type: String, required: true},
   email: {type: String, required: true},
-  password: {type: String, required: true},
-  skills:
-  contact: {type: String},
-  vision: {type: String},
-  location: {type: String},
-  interest: {type: String},
-  image: {type: String, default: ''},
-  passwordResetToken: {type: String, required: true},
-  passwordResetExpires: {type: Date, required: Date.now},
+  password: {type: String},
+  gender: {type: String, default: ''},
+  age: {type: Number, default: ''},
+  skills: {type: String, default: ''},
+  vision: {type: String, default: ''},
+  passwordResetToken: {type: String, default: ''},
+  passwordResetExpires: {type: Date, default: Date.now},
 });
 
-module.exports = mongoose.model("User", UserSchema);
+UserSchema.methods.encryptPassword = (password) => {
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+};
+
+module.exports = mongoose.model('User', UserSchema);
