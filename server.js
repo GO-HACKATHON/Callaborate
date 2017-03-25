@@ -15,6 +15,8 @@ const PORT = process.env.PORT || 3000;
 
 mongoose.connect('mongodb://callaborate:admin@ds035643.mlab.com:35643/callaborate-test');
 
+require('./config/passport');
+
 app.use(express.static('public'));
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
@@ -29,7 +31,12 @@ app.use(session({
   store: new MongoStore({mongooseConnection: mongoose.connection})
 }));
 
-require('./routes/user');
+app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+require('./routes/user')(app);
 
 app.get("/", function(req, res, next){
   res.render('index');
