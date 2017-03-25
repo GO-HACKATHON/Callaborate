@@ -6,6 +6,8 @@ var engine = require('ejs-mate');
 var session = require('express-session');
 var mongoose = require('mongoose');
 var MongoStore = require('connect-mongo')(session);
+var passport = require('passport');
+var flash = require('connect-flash');
 
 
 var app = express();
@@ -27,6 +29,11 @@ app.use(session({
   store: new MongoStore({mongooseConnection: mongoose.connection})
 }));
 
+require('./routes/user');
+
+app.get("/", function(req, res, next){
+  res.render('index');
+});
 
 app.listen(PORT, function(){
   console.log("App running");
