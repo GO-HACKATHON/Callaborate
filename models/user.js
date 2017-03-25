@@ -5,7 +5,7 @@ var userSchema = new mongoose.Schema({
   fullname: {type: String, required: true},
   email: {type: String, required: true},
   password: {type: String},
-  data: [{
+  data: {
     gender: {type: String, default: ''},
     age: {type: Number, default: ''},
     location: {type: String, default: ''},
@@ -13,7 +13,7 @@ var userSchema = new mongoose.Schema({
     vision: {type: String, default: ''},
     interest: {type: String, default: ''},
     image: {type: String, default: ''},
-  }]
+  },
   passwordResetToken: {type: String, default: ''},
   passwordResetExpires: {type: Date, default: Date.now},
 });

@@ -1,3 +1,8 @@
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+var async = require('async');
+
+var crypto = require('crypto');
 var User = require('../models/user');
 
 module.exports = (app, passport, mongoose) => {
@@ -7,73 +12,64 @@ module.exports = (app, passport, mongoose) => {
     failureFlash: true
   }));
 
-  app.post('/login', passport.authenticate('local.login', {
-    successRedirect: '/home',
-    failureRedirect: '/asd',
-    failureFlash: true
-  }));
-
-  app.post('/inputData', (req, res, user) => {
-    User.findById(req.params.id, (err, user) => {
-      if(err){
-          console.log(err)
-      }
-      var userFullname = req.User.fullname;
-      var userEmail = req.User.email;
-      var newUserData = new User();
-      newUserData.fullname = userFullname;
-      newUserData.email = userEmail;
-      newUserData.password = newUserData.encryptPassword(user.password);
-      newUserData.gender = req.body.gender;
-      newUserData.age = req.body.age;
-      newUserData.location = req.body.location;
-      newUserData.skills = req.body.skills;
-      newUserData.vision = req.body.vision;
-      newUserData.interest = req.body.interest;
-
-      newUserData.save((err) => {
-          if(err){
-            console.log(err);
-            return;
-          }
-          return(null, newUserData);
-      });
-    })
-  });
-
-  app.get('/home', (req, res) => {
-    res.render('./user/edit');
-  })
-
-  app.get('/home2', (req, res) => {
-    res.render('home');
-  })
-
-  app.get('/firstlogin', (req, res) =>{
-    res.render('./user/firstlogin');
-  });
-
-  /* app.post('/firstlogindone', (req, res, id) => {
-    User.findById(id, function(err){
-      if(err){
-        console.log(err);
-      }
-
-      var updatedUser = new User();
-
-      updatedUser.gender = req.body.gender;
-      updatedUser.age = req.body.gender;
-      updatedUser.location = req.body.gender;
-      updatedUser.skills = req.body.gender;
-      updatedUser.vision = req.body.gender;
-      updatedUser.interest = req.body.gender;
-
-      updatedUser.save(function(err){
-        if(err){
-          console.log(err);
+  app.post('/login', loginValidation, passport.authenticate('local.login', {
+        //successRedirect: '/home',
+        failureRedirect: '/login',
+        failureFlash : true
+    }), (req, res) => {
+        if{
+            req.session.cookie.expires = null;
         }
-      res.render('index');
-      });
-    });
-  }); */
+        res.redirect('/home');
+  });
+  app.get('/home', (req, res) => {
+    res.render('home', {user: req.user});
+  });
+
+}
+
+function validate(req, res, next){
+   req.checkBody('fullname', 'Fullname is Required').notEmpty();
+   req.checkBody('fullname', 'Fullname Must Not Be Less Than 5').isLength({min:5});
+   req.checkBody('email', 'Email is Required').notEmpty();
+   req.checkBody('email', 'Email is Invalid').isEmail();
+   req.checkBody('password', 'Password is Required').notEmpty();
+   req.checkBody('password', 'Password Must Not Be Less Than 5').isLength({min:5});
+   req.check("password", "Password Must Contain at least 1 Number.").matches(/^(?=.*\d)(?=.*[a-z])[0-9a-z]{5,}$/, "i");
+
+   var errors = req.validationErrors();
+
+   if(errors){
+       var messages = [];
+       errors.forEach((error) => {
+           messages.push(error.msg);
+       });
+
+       req.flash('error', messages);
+       res.redirect('/signup');
+   }else{
+       return next();
+   }
+}
+
+function loginValidation(req, res, next){
+   req.checkBody('email', 'Email is Required').notEmpty();
+   req.checkBody('email', 'Email is Invalid').isEmail();
+   req.checkBody('password', 'Password is Required').notEmpty();
+   req.checkBody('password', 'Password Must Not Be Less Than 5 Characters').isLength({min:5});
+   req.check("password", "Password Must Contain at least 1 Number.").matches(/^(?=.*\d)(?=.*[a-z])[0-9a-z]{5,}$/, "i");
+
+   var loginErrors = req.validationErrors();
+
+   if(loginErrors){
+       var messages = [];
+       loginErrors.forEach((error) => {
+           messages.push(error.msg);
+       });
+
+       req.flash('error', messages);
+       res.redirect('/login');
+   }else{
+       return next();
+   }
 }

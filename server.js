@@ -1,6 +1,7 @@
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var validator = require('express-validator');
 var ejs = require('ejs');
 var engine = require('ejs-mate');
 var session = require('express-session');
@@ -8,7 +9,8 @@ var mongoose = require('mongoose');
 var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var flash = require('connect-flash');
-var User = require('./models/user');
+var _ = require('underscore');
+var moment = require('moment');
 
 
 var app = express();
@@ -26,6 +28,8 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 
+app.use(validator());
+
 app.use(session({
   secret: 'secretkey',
   resave: false,
@@ -42,7 +46,10 @@ app.get("/", function(req, res, next){
   res.render('index');
 });
 
-require('./routes/user')(app, passport, mongoose);
+app.locals._ = _;
+app.locals.moment = moment;
+
+require('./routes/user')(app, passport);
 
 app.listen(PORT, function(){
   console.log("App running");
