@@ -27,12 +27,6 @@ app.use(session({
   store: new MongoStore({mongooseConnection: mongoose.connection})
 }));
 
-app.get('/', (req, res, next) => {
-  res.render('index');
-});
-app.get('/register', (req, res, next) => {
-  res.render('user/register');
-});
 
 app.listen(PORT, function(){
   console.log("App running");
