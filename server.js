@@ -12,7 +12,7 @@ mongoose.connect('mongodb://callaborate:admin@ds117859.mlab.com:17859/callaborat
 
 app.use(express.static('public'));
 app.engine('ejs', engine);
-app.set('view engine', 'ejs');
+app.set('view enginejs', 'ejs');
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
