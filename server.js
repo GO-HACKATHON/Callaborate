@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var flash = require('connect-flash');
+var User = require('./models/user');
 
 
 var app = express();
@@ -41,7 +42,7 @@ app.get("/", function(req, res, next){
   res.render('index');
 });
 
-require('./routes/user')(app, passport);
+require('./routes/user')(app, passport, mongoose);
 
 app.listen(PORT, function(){
   console.log("App running");
